@@ -20,9 +20,10 @@ class AdLeadsClient extends Client
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
-    public function get(array $dateRange, array $filtering, int $page = 1, int $pageSize = 10)
+    public function get(array $dateRange, array $filtering = [], int $page = 1, int $pageSize = 10)
     {
         $params = [
+            'version'       => self::VERSION,
             'date_range'    => json_encode($dateRange),
             'filtering'     => json_encode($filtering),
             'page'          => $page,

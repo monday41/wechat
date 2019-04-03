@@ -19,6 +19,7 @@ use EasyWeChat\Kernel\ServiceContainer;
  *
  * @author monday41
  *
+ * @property \EasyWeChat\Advertise\Auth\AccessToken                           $access_token
  * @property \EasyWeChat\Advertise\Marketing\Client                           $marketing
  * @property \EasyWeChat\Advertise\Marketing\AdLeadsClient                    $adleads
  * @property \EasyWeChat\Advertise\Marketing\AsyncTasksClient                 $asynctasks
@@ -29,6 +30,7 @@ class Application extends ServiceContainer
      * @var array
      */
     protected $providers = [
+        Auth\ServiceProvider::class,
         Marketing\ServiceProvider::class,
         // Base services
         BasicService\QrCode\ServiceProvider::class,

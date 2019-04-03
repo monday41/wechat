@@ -50,6 +50,7 @@ class AsyncTasksClient extends Client
         $taskSpec           = sprintf(self::$TASK_SPEC_TEMPLATE[self::TASK_TYPE_AD_GROUP_HOURLY_REPORT], $date);
 
         $params = [
+            'version'       => self::VERSION,
             'task_name'     => $taskName,
             'task_type'     => self::TASK_TYPE_AD_GROUP_HOURLY_REPORT,
             'task_spec'     => json_encode($taskSpec),
@@ -67,9 +68,10 @@ class AsyncTasksClient extends Client
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
-    public function tasks(array $filtering, int $page = 1, int $pageSize = 10)
+    public function tasks(array $filtering = [], int $page = 1, int $pageSize = 10)
     {
         $params = [
+            'version'       => self::VERSION,
             'filtering'     => json_encode($filtering),
             'page'          => $page,
             'pageSize'      => $pageSize,

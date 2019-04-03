@@ -20,4 +20,5 @@ use EasyWeChat\Kernel\BaseClient;
  */
 class Client extends BaseClient
 {
+    const VERSION = 'v1.0';
 }
