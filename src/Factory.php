@@ -21,6 +21,7 @@ namespace EasyWeChat;
  * @method static \EasyWeChat\BasicService\Application       basicService(array $config)
  * @method static \EasyWeChat\Work\Application               work(array $config)
  * @method static \EasyWeChat\OpenWork\Application           openWork(array $config)
+ * @method static \EasyWeChat\Advertise\Application          advertise(array $config)
  */
 class Factory
 {
