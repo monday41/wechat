@@ -1,17 +1,22 @@
 {
-    "name": "overtrue/wechat",
+    "name": "qtt/wechat",
     "description": "微信SDK",
     "keywords": [
         "wechat",
         "weixin",
         "weixin-sdk",
-        "sdk"
+        "sdk",
+        "qtt"
     ],
     "license": "MIT",
     "authors": [
         {
             "name": "overtrue",
             "email": "anzhengchao@gmail.com"
+        },
+        {
+            "name": "monday41",
+            "email": "xujianan@qutoutiao.net"
         }
     ],
     "require": {
