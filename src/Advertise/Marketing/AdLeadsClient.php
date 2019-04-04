@@ -19,16 +19,17 @@ class AdLeadsClient extends Client
      * @param int     $pageSize
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function get(array $dateRange, array $filtering = [], int $page = 1, int $pageSize = 10)
     {
         $params = [
-            'version'       => self::VERSION,
-            'date_range'    => json_encode($dateRange),
-            'filtering'     => json_encode($filtering),
+            'date_range'    => $dateRange,
+            'filtering'     => $filtering,
             'page'          => $page,
-            'pageSize'      => $pageSize,
-        ];
+            'page_size'     => $pageSize,
+        ] + self::$DEFAULT_OPTION;
 
         return $this->httpGet('marketing/wechat_ad_leads/get', $params);
     }

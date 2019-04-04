@@ -20,5 +20,9 @@ use EasyWeChat\Kernel\BaseClient;
  */
 class Client extends BaseClient
 {
-    const VERSION = 'v1.0';
+    const VERSION   = 'v1.0';
+
+    public static $DEFAULT_OPTION  = [
+        'version'   => self::VERSION,
+    ];
 }

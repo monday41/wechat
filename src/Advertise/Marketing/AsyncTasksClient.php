@@ -8,6 +8,9 @@
 
 namespace EasyWeChat\Advertise\Marketing;
 
+use EasyWeChat\Kernel\Http\StreamResponse;
+use Psr\Http\Message\ResponseInterface;
+
 class AsyncTasksClient extends Client
 {
     /**
@@ -15,13 +18,18 @@ class AsyncTasksClient extends Client
      *
      * @var string
      */
-    protected $downloadEndpoint = 'https://dl.e.qq.com/v1.1';
+    protected $downloadBaseUri = 'https://dl.e.qq.com/v1.1/async_task_files/get';
 
     /**
      * Async task type
      *
      */
-    const TASK_TYPE_AD_GROUP_HOURLY_REPORT = 'TASK_TYPE_AGENCY_ADGROUP_HOURLY_REPORT';
+    const TASK_TYPE_AD_GROUP_HOURLY_REPORT = 'TASK_TYPE_ADGROUP_HOURLY_REPORT';
+
+    /**
+     * Aync task spec type
+     */
+    const TASK_SPEC_TYPE_AD_GROUP_HOURLY_REPORT = 'task_type_adgroup_hourly_report_spec';
 
     /**
      * Async task spec template list
@@ -29,68 +37,82 @@ class AsyncTasksClient extends Client
      * @var array
      */
     protected static $TASK_SPEC_TEMPLATE = [
-        'TASK_TYPE_AGENCY_ADGROUP_HOURLY_REPORT'  => [
-            "task_type_agency_adgroup_hourly_report_spec"   => [
-                "date"  => "%s"
+        self::TASK_TYPE_AD_GROUP_HOURLY_REPORT  => [
+            self::TASK_SPEC_TYPE_AD_GROUP_HOURLY_REPORT   => [
+                "date"  => ""
             ],
         ],
     ];
 
     /**
-     * Add advertise async task
+     * Add advertise async task.
      *
      * @param string   $taskName
      * @param string   $taskType
      * @param array    $taskSpec
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function addHourlyTask(string $taskName, $date)
     {
-        $taskSpec           = sprintf(self::$TASK_SPEC_TEMPLATE[self::TASK_TYPE_AD_GROUP_HOURLY_REPORT], $date);
+        $taskSpec           = self::$TASK_SPEC_TEMPLATE[self::TASK_TYPE_AD_GROUP_HOURLY_REPORT];
+        $taskSpec[self::TASK_SPEC_TYPE_AD_GROUP_HOURLY_REPORT]['date']    = $date;
 
         $params = [
-            'version'       => self::VERSION,
             'task_name'     => $taskName,
             'task_type'     => self::TASK_TYPE_AD_GROUP_HOURLY_REPORT,
-            'task_spec'     => json_encode($taskSpec),
+            'task_spec'     => $taskSpec,
         ];
 
-        return $this->httpPostJson('marketing/async_tasks/add', $params);
+        return $this->httpPostJson('marketing/async_tasks/add', $params, self::$DEFAULT_OPTION);
     }
 
     /**
-     * Get advertise async tasks
+     * Get advertise async tasks.
      *
      * @param array   $filtering
      * @param int     $page
      * @param int     $pageSize
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function tasks(array $filtering = [], int $page = 1, int $pageSize = 10)
     {
         $params = [
-            'version'       => self::VERSION,
-            'filtering'     => json_encode($filtering),
+            'filtering'     => $filtering,
             'page'          => $page,
-            'pageSize'      => $pageSize,
-        ];
+            'page_size'     => $pageSize,
+        ] + self::$DEFAULT_OPTION;
 
-        return $this->httpPostJson('marketing/async_tasks/get', $params);
+        return $this->httpGet('marketing/async_tasks/get', $params);
     }
 
     /**
-     * Get advertise async tasks
+     * Download async task data as a table file.
      *
-     * @param array   $filtering
-     * @param int     $page
-     * @param int     $pageSize
+     * @param int     $taskId
+     * @param int     $fileId
      *
-     * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @return \EasyWeChat\Kernel\Http\Response
      */
     public function taskFiles(int $taskId, int $fileId)
     {
-        //todo
+        $response = $this->requestRaw('marketing/async_task_files/get', 'GET', [
+            'query' => [
+                    'task_id' => $taskId,
+                    'file_id' => $fileId,
+                ] + self::$DEFAULT_OPTION,
+        ]);
+
+        if (false !== stripos($response->getHeaderLine('Content-Type'), 'application/x-www-form-urlencoded')) {
+            return $this->castResponseToType($response, 'raw');
+        }
+
+        return StreamResponse::buildFromPsrResponse($response);
     }
 }
